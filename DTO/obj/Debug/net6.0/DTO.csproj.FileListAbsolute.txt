@@ -1,0 +1,11 @@
+C:\Users\julia\source\repos\Teste\DTO\bin\Debug\net6.0\DTO.deps.json
+C:\Users\julia\source\repos\Teste\DTO\bin\Debug\net6.0\DTO.dll
+C:\Users\julia\source\repos\Teste\DTO\bin\Debug\net6.0\DTO.pdb
+C:\Users\julia\source\repos\Teste\DTO\obj\Debug\net6.0\DTO.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\julia\source\repos\Teste\DTO\obj\Debug\net6.0\DTO.AssemblyInfoInputs.cache
+C:\Users\julia\source\repos\Teste\DTO\obj\Debug\net6.0\DTO.AssemblyInfo.cs
+C:\Users\julia\source\repos\Teste\DTO\obj\Debug\net6.0\DTO.csproj.CoreCompileInputs.cache
+C:\Users\julia\source\repos\Teste\DTO\obj\Debug\net6.0\DTO.dll
+C:\Users\julia\source\repos\Teste\DTO\obj\Debug\net6.0\refint\DTO.dll
+C:\Users\julia\source\repos\Teste\DTO\obj\Debug\net6.0\DTO.pdb
+C:\Users\julia\source\repos\Teste\DTO\obj\Debug\net6.0\ref\DTO.dll

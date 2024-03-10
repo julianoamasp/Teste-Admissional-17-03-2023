@@ -1,0 +1,531 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title>Hello, world!</title>
+</head>
+<body>
+    <nav class="navbar navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="https://getbootstrap.com/docs/5.0/assets/brand/bootstrap-logo.svg" alt="" width="30" height="24" class="d-inline-block align-text-top">
+                Bootstrap
+            </a>
+        </div>
+    </nav>
+
+
+
+
+
+    <div class="container">
+        <div class="row">
+            <nav style="--bs-breadcrumb-divider: ''; margin-top: 20px; display: flex; justify-content: space-between; align-items: center;" aria-label="breadcrumb">
+                <h1>
+                    Usuários
+                </h1>
+                <ol class="breadcrumb" style=" margin: 0px;">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Usuário</li>
+                </ol>
+            </nav>
+
+            <div class="d-flex">
+                <input class="form-control me-2" type="search" placeholder="Search" onkeyup="buscarPorNome()" onchange="buscarPorNome()" aria-label="Search">
+                <button class="btn btn-outline-success" onclick="buscarPorNome()" id="buscatabela" type="submit">Search</button>
+            </div>
+
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Id</th>
+                        <th scope="col">Nome</th>
+                        <th scope="col">Data de Nascimento</th>
+                        <th scope="col">CPF</th>
+                        <th scope="col">Valor</th>
+                        <th scope="col">
+                            <button type="button" class="btn btn-success" onclick="abreModal()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
+                                    <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
+                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+                                </svg>
+                            </button>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="tabelacorpo">
+                </tbody>
+            </table>
+
+            <nav aria-label="Page navigation example" style="
+    display: flex;
+    align-items: center;
+    gap:20px;
+">
+                <select onchange="selecionarQuantidadePorPagina()" id="quantidadePorPaginaSelect" class="form-select" aria-label="Default select example" style="
+    width: 80px;
+">
+                    <option selected>5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                </select>
+                <ul class="pagination" style=" margin: 0px;" id="paginacao">
+                </ul>
+                <div id="paginacaoInfos"></div>
+            </nav>
+
+        </div>
+    </div>
+
+
+
+
+
+    <script>
+        var tabelaFiltro = {
+            busca: "",
+            pagina: 0,
+            quantidadePaginas: 0,
+            quantidadePorPagina: 5,
+            total: 0
+        }
+        function selecionarPagina(paginaNumero) {
+            tabelaFiltro.pagina = paginaNumero;
+            filtrarTabela();
+        }
+        function selecionarQuantidadePorPagina() {
+            tabelaFiltro.pagina = 0;
+            tabelaFiltro.quantidadePorPagina = document.querySelector("#quantidadePorPaginaSelect").value;
+            filtrarTabela();
+        }
+        function buscarPorNome() {
+            tabelaFiltro.pagina = 0;
+            tabelaFiltro.quantidadePorPagina = 5;
+            document.querySelector("#quantidadePorPaginaSelect").selectedIndex = 0;
+            tabelaFiltro.busca = document.querySelector("body > div.container > div > div > input").value;
+            filtrarTabela();
+        }
+
+        function filtrarTabela() {
+            let xhr = new XMLHttpRequest();
+
+            xhr.open('POST', url + "/table", true);
+            xhr.setRequestHeader('Accept', '*/*');
+            xhr.setRequestHeader('Content-Type', 'application/json');
+
+            xhr.onreadystatechange = function (response) {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200 || xhr.status === 201) {
+                        console.log(response)
+                        let itensJson = JSON.parse(response.target.responseText)
+                        if (itensJson.data.length > 0) {
+
+                            tabelaFiltro.busca = itensJson.busca;
+                            tabelaFiltro.pagina = itensJson.pagina;
+                            tabelaFiltro.quantidadePaginas = itensJson.quantidadePaginas;
+                            tabelaFiltro.quantidadePorPagina = itensJson.quantidadePorPagina;
+                            tabelaFiltro.total = itensJson.total;
+
+                            let itens = itensJson.data;
+                            let html = "";
+                            for (let x = 0; x < itens.length; x++) {
+                                itens[x].cpf = formataCPF(itens[x].cpf);
+                                html += `
+                                                                                      <tr data-usuario="`+ encodeURI(JSON.stringify(itens[x])) + `">
+                                                                                        <th scope="row">`+ itens[x].pessoaId + `</th>
+                                                                                        <td>`+ itens[x].nomeCompleto + `</td>
+                                                                                        <td>`+ itens[x].dataNascimento.split("T")[0].split("-").reverse().join("/") + `</td>
+                                                                                        <td>`+ itens[x].cpf + `</td>
+                                                                                        <td>`+ itens[x].valorRenda + `</td>
+                                                                                        <td>
+                                                                                            <button type="button" class="btn btn-warning" onclick="editar(this)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                                  <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                                  <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+</svg></button>
+                                                                                            <button type="button" class="btn btn-danger" onclick="remover(this)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                                  <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+</svg></button>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    `
+                            }
+                            document.querySelector("#tabelacorpo").innerHTML = html;
+
+                            let htmlPaginacao = "";
+                            if (tabelaFiltro.pagina > 0) {
+                                htmlPaginacao += `<li class="page-item"><a class="page-link" href="#" onclick="selecionarPagina(` + (tabelaFiltro.pagina - 1) +`)">Previous</a></li>`;
+                            }
+                            for (let x = 0; x < tabelaFiltro.quantidadePaginas; x++) {
+                                htmlPaginacao += `<li class="page-item"><a class="page-link" href="#" onclick="selecionarPagina(` + x +`)">` + (x + 1) + `</a></li>`;
+                            }
+                            if (tabelaFiltro.pagina < tabelaFiltro.quantidadePaginas-1) {
+                                htmlPaginacao += `<li class="page-item"><a class="page-link" onclick="selecionarPagina(` + (tabelaFiltro.pagina+1) +`)" href="#">Next</a></li>`;
+                            }
+
+                            document.querySelector("#paginacao").innerHTML = htmlPaginacao;
+                            document.querySelector("#paginacaoInfos").innerHTML = "Total " + tabelaFiltro.total + " resultados e " + tabelaFiltro.quantidadePaginas + " páginas";
+                        }
+                    } else {
+                        swal("Erro!", "Erro ao adicionar, tente novamente mais tarde!", "error");
+                    }
+                }
+            };
+            xhr.send(JSON.stringify(tabelaFiltro));
+        }
+
+
+
+        var url = 'https://localhost:7189/Pessoafisica';
+        function atualizarLista() {
+            let xhr = new XMLHttpRequest();
+
+            xhr.open('GET', url, true);
+            xhr.setRequestHeader('Accept', '*/*');
+            xhr.setRequestHeader('Content-Type', 'application/json');
+
+            xhr.onreadystatechange = function (response) {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200 || xhr.status === 201) {
+                        let itens = JSON.parse(response.target.responseText)
+                        if (itens.length > 0) {
+                            let html = "";
+                            for (let x = 0; x < itens.length; x++) {
+                                itens[x].cpf = formataCPF(itens[x].cpf);
+                                html += `
+                                                                                      <tr data-usuario="`+ encodeURI(JSON.stringify(itens[x])) + `">
+                                                                                        <th scope="row">`+ itens[x].pessoaId + `</th>
+                                                                                        <td>`+ itens[x].nomeCompleto + `</td>
+                                                                                        <td>`+ itens[x].dataNascimento.split("T")[0].split("-").reverse().join("/") + `</td>
+                                                                                        <td>`+ itens[x].cpf + `</td>
+                                                                                        <td>`+ itens[x].valorRenda + `</td>
+                                                                                        <td>
+                                                                                            <button type="button" class="btn btn-warning" onclick="editar(this)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                                  <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                                  <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+</svg></button>
+                                                                                            <button type="button" class="btn btn-danger" onclick="remover(this)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                                  <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+</svg></button>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    `
+                            }
+                            document.querySelector("#tabelacorpo").innerHTML = html;
+                        }
+                    } else {
+                        swal("Erro!", "Erro ao adicionar, tente novamente mais tarde!", "error");
+                    }
+                }
+            };
+            xhr.send();
+        }
+        function editarClick() {
+
+            swal({
+                title: "Deseja editar a Pessoa: '" + document.querySelector("#editnome").value + "'?",
+                text: "A ação seguinte será irreversível!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        let erro = [];
+                        if (document.querySelector("#editnome").value.length == 0) {
+                            erro.push("Nome é obrigatório!")
+                        }
+                        if (document.querySelector("#editdtnasc").value == '') {
+                            erro.push("Data de Nacimento é obrigatório!")
+                        }
+                        if (document.querySelector("#editcpf").value.length != 14) {
+                            erro.push("CPF precisa ter 14 digitgos!")
+                        }
+                        if (document.querySelector("#editcpf").value.length == 0) {
+                            erro.push("CPF é obrigatório!")
+                        }
+                        if (document.querySelector("#editmoney").value == '') {
+                            erro.push("Valor Renda é obrigatório!")
+                        }
+                        if (erro.length == 0) {
+
+                            let xhr = new XMLHttpRequest();
+
+                            xhr.open('PUT', url, true);
+                            xhr.setRequestHeader('Accept', '*/*');
+                            xhr.setRequestHeader('Content-Type', 'application/json');
+
+                            let cpfRefat = document.querySelector("#editcpf").value;
+                            cpfRefat = cpfRefat.replaceAll(".", "");
+                            cpfRefat = cpfRefat.replaceAll("-", "");
+                            var data = {
+                                pessoaId: document.querySelector("#editid").value,
+                                nomeCompleto: document.querySelector("#editnome").value,
+                                dataNascimento: document.querySelector("#editdtnasc").value,
+                                valorRenda: document.querySelector("#editmoney").value,
+                                cpf: cpfRefat
+                            };
+
+                            xhr.onreadystatechange = function () {
+                                if (xhr.readyState === 4) {
+                                    if (xhr.status === 200 || xhr.status === 201) {
+                                        filtrarTabela();
+                                        $('#modalEditar').modal('hide');
+                                        document.querySelector("#editid").value = "";
+                                        document.querySelector("#editmoney").value = "";
+                                        document.querySelector("#editdtnasc").value = "";
+                                        document.querySelector("#editnome").value = "";
+                                        document.querySelector("#editcpf").value = "";
+                                        swal("Pronto!", "Editado com sucesso!", "success");
+                                    } else {
+                                        swal("Erro!", "Erro ao editar, tente novamente mais tarde!", "error");
+                                    }
+                                }
+                            };
+
+                            var jsonData = JSON.stringify(data);
+                            xhr.send(jsonData);
+                        } else {
+                            swal("Erro!", erro.join(", "), "error");
+                        }
+                    } else {
+                        swal("Não foi feito nenhuma operação!");
+                    }
+                });
+        }
+
+        function editar(elemento) {
+            let usudecod = decodeURI(elemento.parentElement.parentElement.dataset.usuario);
+            let obj = JSON.parse(usudecod);
+            document.querySelector("#editid").value = obj.pessoaId;
+            document.querySelector("#editmoney").value = obj.valorRenda;
+            document.querySelector("#editdtnasc").value = obj.dataNascimento.split("T")[0];
+            document.querySelector("#editnome").value = obj.nomeCompleto;
+            document.querySelector("#editcpf").value = obj.cpf;
+            $('#modalEditar').modal('show');
+            console.log(obj);
+        }
+
+
+        function remover(elemento) {
+            let usudecod = decodeURI(elemento.parentElement.parentElement.dataset.usuario);
+            let obj = JSON.parse(usudecod);
+            swal({
+                title: "Deseja apagar a Pessoa: '" + obj.nomeCompleto + "'?",
+                text: "A ação seguinte será irreversível!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        let xhr = new XMLHttpRequest();
+
+                        xhr.open('DELETE', url, true);
+                        xhr.setRequestHeader('Accept', '*/*');
+                        xhr.setRequestHeader('Content-Type', 'application/json');
+
+
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState === 4) {
+                                if (xhr.status === 200 || xhr.status === 201) {
+                                    filtrarTabela();
+
+                                    swal("Erro!", "Removido com sucesso!", "success");
+                                } else {
+                                    swal("Erro!", "Erro ao remover, tente novamente mais tarde!", "error");
+                                }
+                            }
+                        };
+
+                        xhr.send(JSON.stringify(obj));
+                    } else {
+                        swal("Não foi feito nenhuma operação!");
+                    }
+                });
+        }
+
+        //adicionar
+        function salvar() {
+            let erro = [];
+
+            if (document.querySelector("#nome").value.length == 0) {
+                erro.push("Nome é obrigatório!")
+            }
+            if (document.querySelector("#dtnasc").value == '') {
+                erro.push("Data de Nacimento é obrigatório!")
+            }
+            if (document.querySelector("#cpf").value.length != 14) {
+                erro.push("CPF precisa ter 14 digitgos!")
+            }
+            if (document.querySelector("#cpf").value.length == 0) {
+                erro.push("CPF é obrigatório!")
+            }
+            if (document.querySelector("#money").value == '') {
+                erro.push("Valor Renda é obrigatório!")
+            }
+            if (erro.length == 0) {
+                let xhr = new XMLHttpRequest();
+
+                xhr.open('POST', url, true);
+                xhr.setRequestHeader('Accept', '*/*');
+                xhr.setRequestHeader('Content-Type', 'application/json');
+
+                let cpfRefat = document.querySelector("#cpf").value;
+                cpfRefat = cpfRefat.replaceAll(".", "");
+                cpfRefat = cpfRefat.replaceAll("-", "");
+                var data = {
+                    pessoaId: 0,
+                    nomeCompleto: document.querySelector("#nome").value,
+                    dataNascimento: document.querySelector("#dtnasc").value,
+                    valorRenda: document.querySelector("#money").value,
+                    cpf: cpfRefat
+                };
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200 || xhr.status === 201) {
+                            filtrarTabela();
+                            $('#modalAdicionar').modal('hide');
+                            document.querySelector("#money").value = "";
+                            document.querySelector("#dtnasc").value = "";
+                            document.querySelector("#nome").value = "";
+                            document.querySelector("#cpf").value = "";
+                            swal("Pronto!", "Adicionado com sucesso!", "success");
+                        } else {
+                            swal("Erro!", "Erro ao adicionar, tente novamente mais tarde!", "error");
+                        }
+                    }
+                };
+
+                var jsonData = JSON.stringify(data);
+                xhr.send(jsonData);
+
+            } else {
+                swal("Erro!", erro.join(", "), "error");
+            }
+        }
+
+        function abreModal() {
+            $('#modalAdicionar').modal('show');
+        }
+        //adicionar
+
+        function formataCPF(cpf) {
+            // Remove caracteres indesejados (deixa apenas os dígitos)
+            cpf = cpf.replace(/\D/g, "");
+
+            // Realiza a formatação
+            return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+        }
+
+        filtrarTabela();
+    </script>
+
+
+
+    <div class="modal fade" id="modalAdicionar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Adicionar Pessoa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="nome" class="col-form-label">Nome:</label>
+                            <input type="text" class="form-control" id="nome">
+                        </div>
+                        <div class="mb-3">
+                            <label for="dtnasc" class="col-form-label">Data de Nascimento:</label>
+                            <input type="date" class="form-control" id="dtnasc">
+                        </div>
+                        <div class="mb-3">
+                            <label for="cpf" class="col-form-label ">CPF:</label>
+                            <input type="text" class="form-control cpf" id="cpf">
+                        </div>
+                        <div class="mb-3">
+                            <label for="money" class="col-form-label">Valor Renda:</label>
+                            <input type="number" class="form-control money" id="money">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="salvar()">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Editar Pessoa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3" style="display: none;">
+                            <input type="number" class="form-control" id="editid">
+                        </div>
+                        <div class="mb-3">
+                            <label for="nome" class="col-form-label">Nome:</label>
+                            <input type="text" class="form-control" id="editnome">
+                        </div>
+                        <div class="mb-3">
+                            <label for="dtnasc" class="col-form-label">Data de Nascimento:</label>
+                            <input type="date" class="form-control" id="editdtnasc">
+                        </div>
+                        <div class="mb-3">
+                            <label for="cpf" class="col-form-label ">CPF:</label>
+                            <input type="text" class="form-control cpf" id="editcpf">
+                        </div>
+                        <div class="mb-3">
+                            <label for="money" class="col-form-label">Valor Renda:</label>
+                            <input type="number" class="form-control money" id="editmoney">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="editarClick()">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="js/jquery.mask.min.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script>
+        $('.cpf').mask('000.000.000-00', { reverse: true });
+                                                            //$('.money').mask('#.##0,00', { reverse: true });
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

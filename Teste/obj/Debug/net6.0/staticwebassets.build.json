@@ -1,0 +1,71 @@
+{
+  "Version": 1,
+  "Hash": "SnIWtseu4sJZHJusmm4XzpCk+2P7jZaHTwFzpFZO8jg=",
+  "Source": "Teste",
+  "BasePath": "_content/Teste",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "Teste\\wwwroot",
+      "Source": "Teste",
+      "ContentRoot": "C:\\Users\\julia\\source\\repos\\Teste\\Teste\\wwwroot\\",
+      "BasePath": "_content/Teste",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "C:\\Users\\julia\\source\\repos\\Teste\\Teste\\wwwroot\\index.html",
+      "SourceId": "Teste",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\julia\\source\\repos\\Teste\\Teste\\wwwroot\\",
+      "BasePath": "_content/Teste",
+      "RelativePath": "index.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\index.html"
+    },
+    {
+      "Identity": "C:\\Users\\julia\\source\\repos\\Teste\\Teste\\wwwroot\\js\\index.js",
+      "SourceId": "Teste",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\julia\\source\\repos\\Teste\\Teste\\wwwroot\\",
+      "BasePath": "_content/Teste",
+      "RelativePath": "js/index.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\index.js"
+    },
+    {
+      "Identity": "C:\\Users\\julia\\source\\repos\\Teste\\Teste\\wwwroot\\js\\jquery.mask.min.js",
+      "SourceId": "Teste",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\julia\\source\\repos\\Teste\\Teste\\wwwroot\\",
+      "BasePath": "_content/Teste",
+      "RelativePath": "js/jquery.mask.min.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\jquery.mask.min.js"
+    }
+  ]
+}
